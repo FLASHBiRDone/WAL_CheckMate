@@ -1,0 +1,15 @@
+version: '3'
+services:
+  wal-kampanjesjekker:
+    build: .
+    ports:
+      - "5003:5003"
+      - "8083:8083"
+    volumes:
+      - wal-kampanjesjekker-data:/app/data
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Oslo
+
+volumes:
+  wal-kampanjesjekker-data:

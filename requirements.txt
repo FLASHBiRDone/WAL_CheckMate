@@ -1,0 +1,6 @@
+facebook-business
+python-dotenv
+Flask
+pytz
+slack_sdk
+slack_bolt
