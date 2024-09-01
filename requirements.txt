@@ -4,3 +4,4 @@ Flask
 pytz
 slack_sdk
 slack_bolt
+gunicorn
