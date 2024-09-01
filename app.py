@@ -35,7 +35,6 @@ oslo_tz = pytz.timezone('Europe/Oslo')
 slack_token = os.getenv('SLACK_BOT_TOKEN')
 slack_client = WebClient(token=slack_token)
 SLACK_CHANNEL = os.getenv('SLACK_CHANNEL', '#checkmate')
-NGROK_URL = os.getenv('NGROK_URL')
 
 app = Flask(__name__)
 
@@ -183,7 +182,7 @@ def check_daily_budget_campaigns(ad_account):
                 "text": {"type": "mrkdwn", "text": f"*Campaign:* {campaign['name']}\n*Ad Account:* {ad_account['name']}\n*URL:* {campaign['url']}"},
                 "accessory": {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": "Stop notifications for this campaign"},
+                    "text": {"type": "plain_text", "text": ":octagonal_sign: Stopp denne notifikasjonen"},
                     "value": f"stop_notif_{campaign['id']}",
                     "action_id": f"stop_notif_{campaign['id']}"
                 }
@@ -338,9 +337,15 @@ def slack_actions():
     return jsonify({"error": "Unknown action"}), 400
 
 def handle_sjekk_command():
-    send_slack_message("Starting a new scan. This may take a few minutes...")
+    send_slack_message("Utfører sjekk, vennligst vent opp til 5 minutter da dette kan ta litt tid.")
+    initial_campaign_count = sum(len(account_data['campaigns']) for account_data in campaign_data['visible'].values())
     list(update_campaign_data())  # Run the update
-    send_slack_message("Scan completed. You can view the results on the web interface.")
+    final_campaign_count = sum(len(account_data['campaigns']) for account_data in campaign_data['visible'].values())
+    
+    if final_campaign_count > initial_campaign_count:
+        send_slack_message("Sjekk fullført. Nye kampanjer med daglig budsjett ble funnet. Se Slack-meldingene ovenfor for detaljer.")
+    else:
+        send_slack_message("Ingen nye kampanjer med daglig budsjett ble funnet.")
 
 if __name__ == '__main__':
     logging.info("Initializing application")

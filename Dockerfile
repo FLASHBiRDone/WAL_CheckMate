@@ -18,6 +18,5 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 ENV PYTHONUNBUFFERED=1
 
 EXPOSE 5003
-EXPOSE 8083
 
-CMD ["python", "-u", "app.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5003", "--workers", "4", "app:app"]
